@@ -11,28 +11,31 @@ e|_d_|c
 Módulo display 7 Segmentos 4 digitos TM1637
 
 https://platformio.org/lib/show/258/TM1637/installation
+https://osoyoo.com/2017/05/21/nodemcu-lesson-14-4-digit-7-segment-led-display-mqtt/
  
 */
 #include <Arduino.h>
 #include <TM1637Display.h>
- 
-const int CLK = D6; //Set the CLK pin connection to the display
-const int DIO = D5; //Set the DIO pin connection to the display
- 
+  
 int numCounter = 0;
- 
-TM1637Display teste_display(CLK, DIO); //set up the 4-Digit Display.
  
 int dig_a = 16;  // a - d0
 int dig_b = 5;  // b - d1
-int dig_c = 4;  // c - d2
-int dig_d = 0;  // d - d3
+int dig_c = 13;  // c - d7
+int dig_d = 15;  // d - d8
 int dig_e = 2;  // e - d4
 int dig_f = 14;  // f - d5
 int dig_g = 12;  // g - d6
-int dio = 13;  // dio - d7 para TM1637
-int clk = 15;  // clk - d8  para TM1637
+int dio = 0;  // dio - d3 para TM1637
+int clk = 4;  // clk - d2  para TM1637
+
+int contagem = 0;
+
 int tempo = 1000;  // delay
+
+
+ 
+TM1637Display teste_display(clk, dio); //set up the 4-Digit Display.
 
 void setup() {
   // put your setup code here, to run once:
@@ -199,20 +202,23 @@ void contador(int tempo){
 void oscilador(int pino, int tempo){
   piscar(pino, tempo);
 }
-void modulo(){
-
-  for(numCounter = 0; numCounter < 1000; numCounter++) //Iterate numCounter
-  {
-    teste_display.showNumberDec(numCounter); //Display the numCounter value;
-    delay(1000);
-  }
-}
 
 // *****************************************************
 void loop() {
-  // put your main code here, to run repeatedly:
-  contador(1000);
-  // oscilador(clk, 1000);
-  modulo;
+  if (contagem > 10000){
+    contagem = 0;
+  }
+  for (int i = 0; i < 10; i++){
+    display(i);
+    delay(1000);
+    Serial.print("digito: %d");
+    Serial.print(i);
+    Serial.println("");
+  }
+  teste_display.setBrightness(0x0f);    //Le o valor do potenciometro  
+  teste_display.showNumberDec(contagem, false);  
+  contagem++;
+  delay(10);
+
 
 }
